@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Image, View, Text } from 'react-native';
 import PropTypes from 'prop-types';
+import Lightbox from 'react-native-lightbox';
 
 export default class HTMLImage extends PureComponent {
     constructor (props) {
@@ -26,8 +27,8 @@ export default class HTMLImage extends PureComponent {
 
     static defaultProps = {
         imagesInitialDimensions: {
-            width: 100,
-            height: 100
+            width: '100%',
+            height: '100%'
         }
     }
 
@@ -99,19 +100,22 @@ export default class HTMLImage extends PureComponent {
 
     validImage (source, style, props = {}) {
         return (
-            <Image
-              source={source}
-              style={[style, { width: this.state.width, height: this.state.height, resizeMode: 'cover' }]}
-              {...props}
-            />
+            <Lightbox>
+                <Image
+                    source={source}
+                    defaultSource={require('./assets/default.png')}
+                    style={[style, { width: this.state.width, height: this.state.height, resizeMode: 'cover' }]}
+                    {...props}
+                />
+            </Lightbox>
         );
     }
 
     get errorImage () {
         return (
-            <View style={{ width: 50, height: 50, borderWidth: 1, borderColor: 'lightgray', overflow: 'hidden', justifyContent: 'center' }}>
-                { this.props.alt ? <Text style={{ textAlign: 'center', fontStyle: 'italic' }}>{ this.props.alt }</Text> : false }
-            </View>
+            <Image
+                source={require('./assets/error.png')}
+            />
         );
     }
 

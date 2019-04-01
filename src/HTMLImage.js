@@ -45,63 +45,95 @@ export default class HTMLImage extends PureComponent {
         this.getImageSize(nextProps);
     }
 
-    getDimensionsFromStyle (style, height, width) {
+    getDimensionsFromStyle(style, height, width, maxWidth) {
         let styleWidth;
         let styleHeight;
-
+        let styleMaxWidth;
+    
         if (height) {
-            styleHeight = height;
+          styleHeight = height;
         }
         if (width) {
-            styleWidth = width;
+          styleWidth = width;
+        }
+        if (maxWidth) {
+          styleMaxWidth = maxWidth;
         }
         if (Array.isArray(style)) {
-            style.forEach((styles) => {
-                if (!width && styles['width']) {
-                    styleWidth = styles['width'];
-                }
-                if (!height && styles['height']) {
-                    styleHeight = styles['height'];
-                }
-            });
+          style.forEach(styles => {
+            if (!width && styles['width']) {
+              styleWidth = styles['width'];
+            }
+            if (!height && styles['height']) {
+              styleHeight = styles['height'];
+            }
+            if (!maxWidth && styles['maxWidth']) {
+              styleMaxWidth = styles['maxWidth'];
+            }
+          });
         } else {
-            if (!width && style['width']) {
-                styleWidth = style['width'];
-            }
-            if (!height && style['height']) {
-                styleHeight = style['height'];
-            }
+          if (!width && style['width']) {
+            styleWidth = style['width'];
+          }
+          if (!height && style['height']) {
+            styleHeight = style['height'];
+          }
+          if (!maxWidth && style['maxWidth']) {
+            styleMaxWidth = style['maxWidth'];
+          }
         }
-
-        return { styleWidth, styleHeight };
-    }
-
-    getImageSize (props = this.props) {
+    
+        return { styleWidth, styleHeight, styleMaxWidth };
+      }
+    
+      getImageSize(props = this.props) {
         const { source, imagesMaxWidth, style, height, width } = props;
-        const { styleWidth, styleHeight } = this.getDimensionsFromStyle(style, height, width);
-
+        const { styleWidth, styleHeight, styleMaxWidth } = this.getDimensionsFromStyle(
+          style,
+          height,
+          width,
+        );
         if (styleWidth && styleHeight) {
-            return this.mounted && this.setState({
-                width: typeof styleWidth === 'string' && styleWidth.search('%') !== -1 ? styleWidth : parseInt(styleWidth, 10),
-                height: typeof styleHeight === 'string' && styleHeight.search('%') !== -1 ? styleHeight : parseInt(styleHeight, 10)
-            });
+          return (
+            this.mounted &&
+            this.setState({
+              width:
+                typeof styleWidth === 'string' && styleWidth.search('%') !== -1
+                  ? styleWidth
+                  : parseInt(styleWidth, 10),
+              height:
+                typeof styleHeight === 'string' && styleHeight.search('%') !== -1
+                  ? styleHeight
+                  : parseInt(styleHeight, 10),
+            })
+          );
         }
         // Fetch image dimensions only if they aren't supplied or if with or height is missing
         Image.getSize(
-            source.uri,
-            (originalWidth, originalHeight) => {
-                if (!imagesMaxWidth) {
-                    return this.mounted && this.setState({ width: originalWidth, height: originalHeight });
-                }
-                const optimalWidth = imagesMaxWidth <= originalWidth ? imagesMaxWidth : originalWidth;
-                const optimalHeight = (optimalWidth * originalHeight) / originalWidth;
-                this.mounted && this.setState({ width: optimalWidth, height: optimalHeight, error: false });
-            },
-            () => {
-                this.mounted && this.setState({ error: true });
+          source.uri,
+          (originalWidth, originalHeight) => {
+            let optimalWidth;
+            let optimalHeight;
+            if (!styleMaxWidth && !imagesMaxWidth) {
+              return this.mounted && this.setState({ width: originalWidth, height: originalHeight });
             }
+            if (imagesMaxWidth) {
+              console.log('2 :', imagesMaxWidth);
+              optimalWidth = imagesMaxWidth <= originalWidth ? imagesMaxWidth : originalWidth;
+              optimalHeight = (optimalWidth * originalHeight) / originalWidth;
+            }
+            if (styleMaxWidth) {
+              console.log('1 :');
+              optimalWidth = styleMaxWidth <= originalWidth ? styleMaxWidth : originalWidth;
+              optimalHeight = (optimalWidth * originalHeight) / originalWidth;
+            }
+            this.mounted && this.setState({ width: optimalWidth, height: optimalHeight, error: false });
+          },
+          () => {
+            this.mounted && this.setState({ error: true });
+          },
         );
-    }
+      }
 
     validImage (source, style, props = {}) {
         return (

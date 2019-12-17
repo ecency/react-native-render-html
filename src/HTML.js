@@ -48,7 +48,8 @@ export default class HTML extends PureComponent {
         baseFontStyle: PropTypes.object.isRequired,
         textSelectable: PropTypes.bool,
         renderersProps: PropTypes.object,
-        allowFontScaling: PropTypes.bool
+        allowFontScaling: PropTypes.bool,
+        disableRerenders: PropTypes.bool,
     }
 
     static defaultProps = {
@@ -65,7 +66,8 @@ export default class HTML extends PureComponent {
         tagsStyles: {},
         classesStyles: {},
         textSelectable: false,
-        allowFontScaling: true
+        allowFontScaling: true,
+        disableRerenders: false,
     }
 
     constructor (props) {

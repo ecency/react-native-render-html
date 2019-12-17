@@ -1,6 +1,6 @@
 {
   "name": "@esteemapp/react-native-render-html",
-  "version": "4.1.4",
+  "version": "4.1.5",
   "author": "eSteemApp",
   "license": "BSD-2-Clause",
   "repository": "https://github.com/eSteemApp/react-native-render-html",
@@ -17,8 +17,8 @@
     "events": "^1.1.0",
     "html-entities": "^1.2.0",
     "htmlparser2": "^3.10.1",
+    "react-native-autoheight-webview": "^1.3.4",
     "react-native-lightbox": "git+https://github.com/oblador/react-native-lightbox.git",
-    "react-native-webview": "^8.0.0",
     "stream": "0.0.2"
   },
   "peerDependencies": {
